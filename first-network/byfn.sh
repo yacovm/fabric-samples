@@ -168,6 +168,8 @@ function networkUp() {
     COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_KAFKA}"
   elif [ "${CONSENSUS_TYPE}" == "etcdraft" ]; then
     COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_RAFT2}"
+  elif [ "${CONSENSUS_TYPE}" == "smartbft" ]; then
+    COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_RAFT2}"
   fi
   if [ "${IF_COUCHDB}" == "couchdb" ]; then
     COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_COUCH}"
@@ -185,7 +187,7 @@ function networkUp() {
     sleep 9
   fi
 
-  if [ "$CONSENSUS_TYPE" == "etcdraft" ]; then
+  if [ "$CONSENSUS_TYPE" == "etcdraft" -o "$CONSENSUS_TYPE" == "smartbft" ]; then
     sleep 1
     echo "Sleeping 15s to allow $CONSENSUS_TYPE cluster to complete booting"
     sleep 14
@@ -225,6 +227,8 @@ function upgradeNetwork() {
     if [ "${CONSENSUS_TYPE}" == "kafka" ]; then
       COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_KAFKA}"
     elif [ "${CONSENSUS_TYPE}" == "etcdraft" ]; then
+      COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_RAFT2}"
+    elif [ "${CONSENSUS_TYPE}" == "smartbft" ]; then
       COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_RAFT2}"
     fi
     if [ "${IF_COUCHDB}" == "couchdb" ]; then
@@ -429,6 +433,8 @@ function generateChannelArtifacts() {
     configtxgen -profile SampleDevModeKafka -channelID $SYS_CHANNEL -outputBlock ./channel-artifacts/genesis.block
   elif [ "$CONSENSUS_TYPE" == "etcdraft" ]; then
     configtxgen -profile SampleMultiNodeEtcdRaft -channelID $SYS_CHANNEL -outputBlock ./channel-artifacts/genesis.block
+  elif [ "$CONSENSUS_TYPE" == "smartbft" ]; then
+    configtxgen -profile SampleMultiNodeSmartBFT -channelID $SYS_CHANNEL -outputBlock ./channel-artifacts/genesis.block
   else
     set +x
     echo "unrecognized CONSESUS_TYPE='$CONSENSUS_TYPE'. exiting"
