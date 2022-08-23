@@ -77,6 +77,11 @@ setAnchorPeer() {
   ${CONTAINER_CLI} exec cli ./scripts/setAnchorPeer.sh $ORG $CHANNEL_NAME 
 }
 
+updatePermissions() {
+  ORG=$1
+  ${CONTAINER_CLI} exec cli ./scripts/blockOrg.sh $ORG $CHANNEL_NAME
+}
+
 FABRIC_CFG_PATH=${PWD}/configtx
 
 ## Create channel genesis block
@@ -102,5 +107,7 @@ infoln "Setting anchor peer for org1..."
 setAnchorPeer 1
 infoln "Setting anchor peer for org2..."
 setAnchorPeer 2
+infoln "Updating permissions for org2..."
+updatePermissions 1
 
 successln "Channel '$CHANNEL_NAME' joined"
